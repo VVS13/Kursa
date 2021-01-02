@@ -9,9 +9,17 @@
         <CommandBinding Command="MediaCommands.Play" CanExecute="Play_CanExecute" Executed="Play_Executed" />
         <CommandBinding Command="MediaCommands.Pause" CanExecute="Pause_CanExecute" Executed="Pause_Executed" />
         <CommandBinding Command="MediaCommands.Stop" CanExecute="Stop_CanExecute" Executed="Stop_Executed" />
-        
-    </Window.CommandBindings>
+
+        <CommandBinding Command="MediaCommands.FastForward" CanExecute="Forwards_CanExecute" Executed="Forwards_Executed" />
+        <CommandBinding Command="MediaCommands.Rewind" CanExecute="Backwards_CanExecute" Executed="Backwards_Executed" />
+        <CommandBinding Command="MediaCommands.PreviousTrack" CanExecute="Restart_CanExecute" Executed="Restart_Executed" />
     
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Space" Command="{Binding MainWindow_KeyDown}"/>
+    </Window.InputBindings>
+
     <Grid MouseWheel="Grid_MouseWheel">
         
         <Grid.RowDefinitions>
@@ -41,11 +49,23 @@
             <Button Command="MediaCommands.Stop">
                 <Image Source="/Images/control_stop_blue.png" />
             </Button>
-            
+
+            <Button Command="MediaCommands.Rewind">
+                <Image Source="/Images/arrow_left.png" />
+            </Button>
+
+            <Button Command="MediaCommands.FastForward">
+                <Image Source="/Images/arrow_right.png" />
+            </Button>
+
+            <Button Command="MediaCommands.PreviousTrack">
+                <Image Source="/Images/refresh.png" />
+            </Button>
+
         </ToolBar>
-        
-        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" />
-        
+
+        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="Uniform" StretchDirection="Both" MouseLeftButtonDown= "OnMouseDownMedia"/>
+
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -64,7 +84,7 @@
             </StatusBar.ItemsPanel>
             
             <StatusBarItem>
-                <TextBlock Name="lblProgressStatus">00:00:00</TextBlock>
+                <TextBlock Name="lblProgressStatus" MouseLeftButtonDown="lblProgressStatus_MouseLeftButtonDown" >00:00:00</TextBlock>
             </StatusBarItem>
             
             <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
