@@ -88,7 +88,7 @@
             </StatusBarItem>
             
             <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
-                <Slider Name="sliderProgress" Thumb.DragStarted="sliderProgress_DragStarted" Thumb.DragCompleted="sliderProgress_DragCompleted" ValueChanged="sliderProgress_ValueChanged" />
+                <Slider Name="sliderProgress" Thumb.DragStarted="sliderProgress_DragStarted" Thumb.DragCompleted="sliderProgress_DragCompleted" ValueChanged="sliderProgress_ValueChanged" /> 
             </StatusBarItem>
             
             <StatusBarItem Grid.Column="2">

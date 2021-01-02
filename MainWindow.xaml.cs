@@ -182,7 +182,7 @@ namespace AudioVideo
         }
 
         private void timeUpdate()
-        {
+        { 
             if (!reverseTime)
             {
                 lblProgressStatus.Text = TimeSpan.FromSeconds(sliderProgress.Value).ToString(@"hh\:mm\:ss");
