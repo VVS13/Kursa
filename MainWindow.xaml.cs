@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
 namespace AudioVideo
@@ -191,6 +193,17 @@ namespace AudioVideo
             {
                 lblProgressStatus.Text = "-" + TimeSpan.FromSeconds(sliderProgress.Maximum - sliderProgress.Value).ToString(@"hh\:mm\:ss");
             }
+        }
+
+        private static byte[] Screenshot(this UIElement source, double scale)
+        {
+            double sourceH = source.RenderSize.Height;
+            double sourceW = source.RenderSize.Width;
+            double renderH = sourceH * scale;
+            double renderW = sourceW * scale;
+
+            RenderTargetBitmap renderTarget = new RenderTargetBitmap((int)renderW, (int)renderH, 96, 96, PixelFormats.Pbgra32);
+            VisualBrush sourceBrush = new VisualBrush(source);
         }
 
     }
