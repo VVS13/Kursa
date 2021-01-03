@@ -61,6 +61,10 @@
             <Button Command="MediaCommands.PreviousTrack">
                 <Image Source="/Images/refresh.png" />
             </Button>
+            
+            <Button Click="btnSC_Click">
+                Screenshot
+            </Button>
 
         </ToolBar>
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -195,16 +196,49 @@ namespace AudioVideo
             }
         }
 
-        private static byte[] Screenshot(this UIElement source, double scale)
+        private void btnSC_Click(object sender,RoutedEventArgs e)
         {
+            byte[] screenshot = mePlayer.getScreenshot(90);
+            FileStream fileStream = new FileStream(@"Screenshot.jpg", FileMode.Create, FileAccess.ReadWrite);
+            BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+            binaryWriter.Write(screenshot);
+            binaryWriter.Close();
+        }
+
+    }
+
+    public static class Screenshot
+    {
+        public static byte[] getScreenshot(this UIElement source, int quality)
+        {
+            double scale = 0.5;
+
             double sourceH = source.RenderSize.Height;
             double sourceW = source.RenderSize.Width;
             double renderH = sourceH * scale;
             double renderW = sourceW * scale;
 
             RenderTargetBitmap renderTarget = new RenderTargetBitmap((int)renderW, (int)renderH, 96, 96, PixelFormats.Pbgra32);
-            VisualBrush sourceBrush = new VisualBrush(source);
-        }
+            //VisualBrush sourceBrush = new VisualBrush(source);
+            DrawingVisual drawingVisual = new DrawingVisual();
 
+            renderTarget.Render(drawingVisual);
+
+            JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder
+            {
+                QualityLevel = quality
+            };
+
+            jpgEncoder.Frames.Add(BitmapFrame.Create(renderTarget));
+
+            Byte[] imageArray;
+
+            using (MemoryStream outputStream = new MemoryStream())
+            {
+                jpgEncoder.Save(outputStream);
+                imageArray = outputStream.ToArray();
+            }
+            return imageArray;
+        }
     }
 }
