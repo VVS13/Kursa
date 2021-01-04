@@ -4,7 +4,7 @@
  Title="Media Player with WPF" Height="400" Width="600"
  MinWidth="300" SizeToContent="WidthAndHeight">
     <Window.CommandBindings>
-        
+
         <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed" />
         <CommandBinding Command="MediaCommands.Play" CanExecute="Play_CanExecute" Executed="Play_Executed" />
         <CommandBinding Command="MediaCommands.Pause" CanExecute="Pause_CanExecute" Executed="Pause_Executed" />
@@ -13,7 +13,7 @@
         <CommandBinding Command="MediaCommands.FastForward" CanExecute="Forwards_CanExecute" Executed="Forwards_Executed" />
         <CommandBinding Command="MediaCommands.Rewind" CanExecute="Backwards_CanExecute" Executed="Backwards_Executed" />
         <CommandBinding Command="MediaCommands.PreviousTrack" CanExecute="Restart_CanExecute" Executed="Restart_Executed" />
-    
+
     </Window.CommandBindings>
 
     <Window.InputBindings>
@@ -21,31 +21,31 @@
     </Window.InputBindings>
 
     <Grid MouseWheel="Grid_MouseWheel">
-        
+
         <Grid.RowDefinitions>
-            
+
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            
+
         </Grid.RowDefinitions>
-        
+
         <ToolBar>
-            
+
             <Button Command="ApplicationCommands.Open">
                 <Image Source="/Images/folder.png" />
             </Button>
-           
+
             <Separator />
-            
+
             <Button Command="MediaCommands.Play">
                 <Image Source="/Images/control_play_blue.png" />
             </Button>
-            
+
             <Button Command="MediaCommands.Pause">
                 <Image Source="/Images/control_pause_blue.png" />
             </Button>
-            
+
             <Button Command="MediaCommands.Stop">
                 <Image Source="/Images/control_stop_blue.png" />
             </Button>
@@ -61,44 +61,69 @@
             <Button Command="MediaCommands.PreviousTrack">
                 <Image Source="/Images/refresh.png" />
             </Button>
-            
+
+            <Button Click="btnMinusTime_Click">
+                |-0.5s|
+            </Button>
+
             <Button Click="btnSC_Click">
                 Screenshot
             </Button>
 
+            <Button Click="btnPlusTime_Click">
+                |+0.5s|
+            </Button>
+
+
+            <TextBox x:Name="text1" Width="78" BorderBrush="Black" Margin="0" >
+
+            </TextBox>
+
+            <Button Click="btnSaveFlag_Click" BorderBrush="Aqua" >
+                save flag
+            </Button>
+
+            
+
         </ToolBar>
 
-        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="Uniform" StretchDirection="Both" MouseLeftButtonDown= "OnMouseDownMedia"/>
+        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="Uniform" StretchDirection="Both" MouseLeftButtonDown= "OnMouseDownMedia" ScrubbingEnabled="True"/>
 
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
-                    
+
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            
+
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            
+                            <ColumnDefinition Width="Auto" />
+
                         </Grid.ColumnDefinitions>
                     </Grid>
-                    
+
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
-            
+
             <StatusBarItem>
                 <TextBlock Name="lblProgressStatus" MouseLeftButtonDown="lblProgressStatus_MouseLeftButtonDown" >00:00:00</TextBlock>
             </StatusBarItem>
-            
+
             <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
-                <Slider Name="sliderProgress" Thumb.DragStarted="sliderProgress_DragStarted" Thumb.DragCompleted="sliderProgress_DragCompleted" ValueChanged="sliderProgress_ValueChanged" /> 
+                <Slider Name="sliderProgress" Thumb.DragStarted="sliderProgress_DragStarted" Thumb.DragCompleted="sliderProgress_DragCompleted" ValueChanged="sliderProgress_ValueChanged" />
             </StatusBarItem>
-            
+
+            <StatusBarItem Grid.Column="3">
+                <Slider Name="speedRatioSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaSpeedRatio" Value="100" Width="70" />
+            </StatusBarItem>
+
+
             <StatusBarItem Grid.Column="2">
                 <ProgressBar Name="pbVolume" Width="50" Height="12" Maximum="1" Value="{Binding ElementName=mePlayer, Path=Volume}" />
             </StatusBarItem>
-            
+
         </StatusBar>
     </Grid>
 </Window>

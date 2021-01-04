@@ -16,12 +16,15 @@ namespace AudioVideo
 
         private bool reverseTime = false;
         private bool isPausedByClick = false;
+        private bool file_created = false;
+
+        private string video_name = "----------";
 
         public MediaPlayerProject()
         {
             InitializeComponent();
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Interval = TimeSpan.FromMilliseconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
             this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
@@ -51,6 +54,8 @@ namespace AudioVideo
             openFileDialog.Filter = "Media files (*.mp3;*.mpg;*.mpeg;*.mp4)|*.mp3;*.mpg;*.mpeg;*.mp4|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
                 mePlayer.Source = new Uri(openFileDialog.FileName);
+                video_name = openFileDialog.SafeFileName; //?
+            //Console.WriteLine(video_name); works
 
         }
 
@@ -159,6 +164,13 @@ namespace AudioVideo
         private void sliderProgress_DragStarted(object sender, DragStartedEventArgs e)
         {
             userIsDraggingSlider = true;
+
+            int SliderValue = (int)sliderProgress.Value;
+
+            // Overloaded constructor takes the arguments days, hours, minutes, seconds, milliseconds.
+            // Create a TimeSpan with miliseconds equal to the slider value.
+            TimeSpan ts = new TimeSpan(0, 0, 0, 0, SliderValue);
+            mePlayer.Position = ts;
         }
 
         private void sliderProgress_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -169,6 +181,8 @@ namespace AudioVideo
 
         private void sliderProgress_ValueChanged(object sender,RoutedPropertyChangedEventArgs<double> e)
         {
+            
+
             timeUpdate();
         }
 
@@ -196,6 +210,7 @@ namespace AudioVideo
             }
         }
 
+        //---------------------------------------------------------------------
         private void btnSC_Click(object sender,RoutedEventArgs e)
         {
             byte[] screenshot = mePlayer.getScreenshot(90);
@@ -204,6 +219,81 @@ namespace AudioVideo
             binaryWriter.Write(screenshot);
             binaryWriter.Close();
         }
+
+        private void btnPlusTime_Click(object sender, RoutedEventArgs e)
+        {
+            mePlayer.Position += TimeSpan.FromSeconds(0.5);
+        }
+
+        private void btnMinusTime_Click(object sender, RoutedEventArgs e)
+        {
+            mePlayer.Position -= TimeSpan.FromSeconds(0.5);
+        }
+
+
+        private void ChangeMediaSpeedRatio(object sender, RoutedPropertyChangedEventArgs<double> args)
+        {
+            mePlayer.SpeedRatio = (double)speedRatioSlider.Value / 10;
+        }
+
+        //---------------------------------------------------------------------
+
+        //private void btnSaveFlag_Click(object sender, EventArgs e)
+        //{
+        //    string path = @"c:\temp\MyTest.txt";
+
+        //    if (!File.Exists(path))
+        //    {
+        //        string[] createText = { "Hello", "And", "Welcome" };
+        //        File.WriteAllLines(path, createText);
+        //    }
+        //    string appendText = "This is extra text" + Environment.NewLine;
+        //    File.AppendAllText(path, appendText);
+
+        //    //SaveFileDialog dlg = new SaveFileDialog();
+        //    //dlg.Filter = "*.txt|*.txt";
+        //    //dlg.RestoreDirectory = true;
+        //    //File.WriteAllText(dlg.FileName, text1.Text);
+
+        //    //TextWriter txt = new StreamWriter("C:\\demo.txt");
+        //    //txt.WriteLine(text1.Text);
+        //    //txt.Close();
+        //}
+
+
+        public void SaveFileDialogSample()
+        {
+            InitializeComponent();
+        }
+
+        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        private void btnSaveFlag_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (mediaPlayerIsPlaying == true)
+            {
+                if (file_created == false)
+                {
+                    string line_to_be_writen = video_name + " -  Time:" + lblProgressStatus.Text + " -  Name:" + text1.Text;
+
+                    if (saveFileDialog.ShowDialog() == true)
+                        File.WriteAllText(saveFileDialog.FileName, line_to_be_writen);
+                    file_created = true;
+                }
+                else
+                {
+                    string line_to_be_writen ="\n" + video_name + " -  Time:" + lblProgressStatus.Text + " -  Name:" + text1.Text;
+
+                    File.AppendAllText(saveFileDialog.FileName, line_to_be_writen);
+                }
+                   
+            }
+            else
+            {
+                //maybe popup here
+            }
+        }
+        //---------------------------------------------------------------------
 
     }
 
