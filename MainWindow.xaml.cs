@@ -297,7 +297,7 @@ namespace AudioVideo
         private void btnSaveFlag_Click(object sender, RoutedEventArgs e)
         {
 
-            if (mediaPlayerIsPlaying == true)
+            if (mediaPlayerIsPlaying == false)
             {
                 if (file_created == false)
                 {
@@ -318,7 +318,7 @@ namespace AudioVideo
             }
             else
             {
-                //maybe popup here
+                //popup to tell user to stop video before adding flag
             }
         }
         //---------------------------------------------------------------------
