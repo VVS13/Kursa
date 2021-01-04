@@ -14,11 +14,13 @@ namespace AudioVideo
         private bool mediaPlayerIsPlaying = false;
         private bool userIsDraggingSlider = false;
 
+        private bool fullscreen = false;
+
         private bool reverseTime = false;
         private bool isPausedByClick = false;
         private bool file_created = false;
 
-        private string video_name = "----------";
+        private string video_name = "";
 
         public MediaPlayerProject()
         {
@@ -59,37 +61,55 @@ namespace AudioVideo
 
         }
 
-        private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void PPbtn_Click (object sender, RoutedEventArgs e)
         {
-            e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
+
+
+            if (mediaPlayerIsPlaying == false && video_name!= "")
+            {
+                mePlayer.Play();
+                Play_Pause.Content = FindResource("Pause");
+                mediaPlayerIsPlaying = true;
+            }
+            else
+            {
+                mePlayer.Pause();
+                Play_Pause.Content = FindResource("Play");
+                mediaPlayerIsPlaying = false;
+            }
         }
 
-        private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            mePlayer.Play();
-            mediaPlayerIsPlaying = true;
-        }
+        //private void Play_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        //{
+        //    e.CanExecute = (mePlayer != null) && (mePlayer.Source != null);
+        //}
 
-        private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = mediaPlayerIsPlaying;
-        }
+        //private void Play_Executed(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    mePlayer.Play();
+        //    mediaPlayerIsPlaying = true;
+        //}
 
-        private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            mePlayer.Pause();
-        }
+        //private void Pause_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        //{
+        //    e.CanExecute = mediaPlayerIsPlaying;
+        //}
 
-        private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = mediaPlayerIsPlaying;
-        }
+        //private void Pause_Executed(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    mePlayer.Pause();
+        //}
 
-        private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            mePlayer.Stop();
-            mediaPlayerIsPlaying = false;
-        }
+        //private void Stop_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        //{
+        //    e.CanExecute = mediaPlayerIsPlaying;
+        //}
+
+        //private void Stop_Executed(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    mePlayer.Stop();
+        //    mediaPlayerIsPlaying = false;
+        //}
         
         //------------------------------------------------------------------------------
 
@@ -163,6 +183,7 @@ namespace AudioVideo
 
         private void sliderProgress_DragStarted(object sender, DragStartedEventArgs e)
         {
+
             userIsDraggingSlider = true;
 
             int SliderValue = (int)sliderProgress.Value;
@@ -213,11 +234,16 @@ namespace AudioVideo
         //---------------------------------------------------------------------
         private void btnSC_Click(object sender,RoutedEventArgs e)
         {
-            byte[] screenshot = mePlayer.getScreenshot(90);
-            FileStream fileStream = new FileStream(@"Screenshot.jpg", FileMode.Create, FileAccess.ReadWrite);
-            BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-            binaryWriter.Write(screenshot);
-            binaryWriter.Close();
+            if (video_name != "")
+            {
+                byte[] screenshot = mePlayer.getScreenshot(96);
+                FileStream fileStream = new FileStream(@"screenshot.jpg", FileMode.Create, FileAccess.ReadWrite);
+                BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+                binaryWriter.Write(screenshot);
+                binaryWriter.Close();
+                    
+            }
+            
         }
 
         private void btnPlusTime_Click(object sender, RoutedEventArgs e)
@@ -236,7 +262,7 @@ namespace AudioVideo
             mePlayer.SpeedRatio = (double)speedRatioSlider.Value / 10;
         }
 
-        //---------------------------------------------------------------------
+        //--------------------------------------------------------------------- other methods i tried
 
         //private void btnSaveFlag_Click(object sender, EventArgs e)
         //{
@@ -266,7 +292,8 @@ namespace AudioVideo
             InitializeComponent();
         }
 
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
+        SaveFileDialog saveFileDialog = new SaveFileDialog(); //to save flags durring session
+
         private void btnSaveFlag_Click(object sender, RoutedEventArgs e)
         {
 
@@ -286,6 +313,7 @@ namespace AudioVideo
 
                     File.AppendAllText(saveFileDialog.FileName, line_to_be_writen);
                 }
+                
                    
             }
             else
@@ -295,13 +323,35 @@ namespace AudioVideo
         }
         //---------------------------------------------------------------------
 
+        private void btnFullScreen_Click(object sender, EventArgs e)
+        {
+            if (!fullscreen)
+            {
+                this.WindowStyle = WindowStyle.None;
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowStyle = WindowStyle.SingleBorderWindow;
+                this.WindowState = WindowState.Normal;
+            }
+
+            fullscreen = !fullscreen;
+
+        }
+
+        private void pbVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
     }
 
     public static class Screenshot
     {
         public static byte[] getScreenshot(this UIElement source, int quality)
         {
-            double scale = 0.5;
+            double scale = 1;
+            //dont know how to make scale work 
 
             double sourceH = source.RenderSize.Height;
             double sourceW = source.RenderSize.Width;
@@ -309,10 +359,20 @@ namespace AudioVideo
             double renderW = sourceW * scale;
 
             RenderTargetBitmap renderTarget = new RenderTargetBitmap((int)renderW, (int)renderH, 96, 96, PixelFormats.Pbgra32);
-            //VisualBrush sourceBrush = new VisualBrush(source);
-            DrawingVisual drawingVisual = new DrawingVisual();
+            VisualBrush sourceBrush = new VisualBrush(source);
 
-            renderTarget.Render(drawingVisual);
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+
+            using (drawingContext)
+            {
+                //drawingContext.PushTransform(new ScaleTranform(scale, scale));
+                drawingContext.DrawRectangle(sourceBrush, null, new Rect(new Point(0, 0), new Point(sourceW,sourceH)));
+
+            }
+
+
+                renderTarget.Render(drawingVisual);
 
             JpegBitmapEncoder jpgEncoder = new JpegBitmapEncoder
             {
